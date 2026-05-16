@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 BT-Ultimate Pro</title>
+    <!-- App Icons -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', 'Tahoma', sans-serif; min-height: 100vh; padding-bottom: 50px; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .btn-custom { border-radius: 12px; padding: 12px; font-weight: 600; transition: all 0.2s; border: none; }
+        .btn-custom:active { transform: scale(0.95); }
+        
+        .btn-mode { 
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%); 
+            color: #94a3b8; width: 100%; margin-bottom: 10px; 
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .btn-mode.active { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+            color: white !important; box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); 
+            border: 1px solid rgba(255,255,255,0.3); transform: translateY(-2px);
+        }
+        .btn-rainbow-active {
+            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff) !important;
+            color: white !important; box-shadow: 0 0 25px rgba(255, 255, 255, 0.4) !important;
+            animation: rainbow-glow 2s infinite linear;
+        }
+        @keyframes rainbow-glow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .color-circle { width: 45px; height: 45px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; display: inline-block; margin: 4px; }
+        .color-circle.active { border: 3px solid #3b82f6; transform: scale(1.1); box-shadow: 0 0 15px #3b82f6; }
+        
+        .section-label { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 20px; border-left: 4px solid #3b82f6; padding-left: 10px; }
+        #status { font-size: 0.85rem; padding: 5px 15px; border-radius: 20px; background: rgba(0,0,0,0.3); display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-1">S3 <span class="text-primary">BT-Ultimate</span></h2>
+            <div id="status" class="text-info">ยังไม่ได้เชื่อมต่อบลูทูธ</div>
+        </div>
+
+        <button id="connect" class="btn btn-primary w-100 btn-custom py-3 mb-4 shadow">🔵 เริ่มการเชื่อมต่อบลูทูธ</button>
+
+        <div id="controls" style="display:none;">
+            <div class="glass-card mb-3">
+                <div class="section-label">พาเลทแม่สี</div>
+                <div class="text-center">
+                    <div class="color-circle" style="background:#FF0000" onclick="pickColor(this, 255,0,0)"></div>
+                    <div class="color-circle" style="background:#00FF00" onclick="pickColor(this, 0,255,0)"></div>
+                    <div class="color-circle" style="background:#0000FF" onclick="pickColor(this, 0,0,255)"></div>
+                    <div class="color-circle" style="background:#FFFF00" onclick="pickColor(this, 255,255,0)"></div>
+                    <div class="color-circle" style="background:#00FFFF" onclick="pickColor(this, 0,255,255)"></div>
+                    <div class="color-circle" style="background:#FF00FF" onclick="pickColor(this, 255,0,255)"></div>
+                    <div class="color-circle" style="background:#FFFFFF" onclick="pickColor(this, 255,255,255)"></div>
+                    <div class="color-circle" style="background:#FFA500" onclick="pickColor(this, 255,165,0)"></div>
+                </div>
+                <input type="color" id="colorPicker" class="form-control form-control-color w-100 mt-3 border-0 bg-transparent" style="height:50px;" value="#ff0000">
+            </div>
+
+            <div class="glass-card mb-3">
+                <div class="section-label">การปรับแต่ง</div>
+                <div class="mb-4"><label class="form-label d-flex justify-content-between"><span>ความสว่าง</span> <span id="brightVal">100</span></label>
+                    <input type="range" class="form-range" id="brightRange" min="0" max="255" value="100" oninput="updateVal(0xFE, this.value, 'brightVal')"></div>
+                <div class="mb-3"><label class="form-label d-flex justify-content-between"><span>ความเร็ว</span> <span id="speedVal">100</span></label>
+                    <input type="range" class="form-range" id="speedRange" min="1" max="255" value="100" oninput="updateVal(0xFD, this.value, 'speedVal')"></div>
+                <button class="btn btn-outline-secondary w-100 btn-custom mt-2" onclick="resetDefault()">🔄 คืนค่าเริ่มต้น</button>
+            </div>
+
+            <div class="glass-card">
+                <div class="section-label">โหมดการทำงาน</div>
+                <div class="row g-2">
+                    <div class="col-6"><button class="btn btn-custom btn-mode active" onclick="setMode(0, this)">ติดค้าง</button></div>
+                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(2, this)">กระพริบช้า</button></div>
+                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(3, this)">กระพริบเร็ว</button></div>
+                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(4, this)">หายใจ</button></div>
+                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(5, this)">จังหวะหัวใจ</button></div>
+                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(6, this)">ไซเรนตำรวจ</button></div>
+                    <div class="col-12"><button class="btn btn-custom btn-mode" style="background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);" onclick="setMode(1, this, true)">🌈 สีรุ้งอัตโนมัติ</button></div>
+                    <div class="col-12"><button class="btn btn-custom btn-danger mt-2" onclick="setMode(7, this)">❌ ปิดระบบไฟ</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let characteristic;
+        let isWriting = false; // ป้องกัน GATT operation in progress
+        const serviceUuid = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+        const charUuid = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+
+        document.getElementById('connect').addEventListener('click', async () => {
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'S3-BT-Ultimate' }],
+                    optionalServices: [serviceUuid]
+                });
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(serviceUuid);
+                characteristic = await service.getCharacteristic(charUuid);
+                document.getElementById('status').innerText = "เชื่อมต่อแล้ว ✅";
+                document.getElementById('status').className = "text-success fw-bold";
+                document.getElementById('controls').style.display = "block";
+                document.getElementById('connect').style.display = "none";
+            } catch (e) { document.getElementById('status').innerText = "เกิดข้อผิดพลาด: " + e.message; }
+        });
+
+        async function writeBLE(data) {
+            if (!characteristic || isWriting) return;
+            isWriting = true;
+            try {
+                await characteristic.writeValue(new Uint8Array(data));
+            } catch (e) { console.error(e); }
+            finally { isWriting = false; }
+        }
+
+        async function setMode(m, btn, isRainbow = false) {
+            document.querySelectorAll('.btn-mode').forEach(b => {
+                b.classList.remove('active');
+                b.classList.remove('btn-rainbow-active');
+            });
+            if (isRainbow) btn.classList.add('btn-rainbow-active');
+            else btn.classList.add('active');
+            await writeBLE([m]);
+        }
+
+        async function pickColor(el, r, g, b) {
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            const steadyBtn = document.querySelectorAll('.btn-mode')[0];
+            setMode(0, steadyBtn);
+            await writeBLE([r, g, b]);
+        }
+
+        async function updateVal(type, v, labelId) {
+            document.getElementById(labelId).innerText = v;
+            await writeBLE([type, v]);
+        }
+
+        async function resetDefault() {
+            document.getElementById('brightRange').value = 100;
+            document.getElementById('speedRange').value = 100;
+            document.getElementById('brightVal').innerText = 100;
+            document.getElementById('speedVal').innerText = 100;
+            await writeBLE([0xFE, 100]);
+            await writeBLE([0xFD, 100]);
+            const steadyBtn = document.querySelectorAll('.btn-mode')[0];
+            setMode(0, steadyBtn);
+            await writeBLE([255, 0, 0]);
+        }
+
+        document.getElementById('colorPicker').addEventListener('input', async (e) => {
+            const hex = e.target.value;
+            const r = parseInt(hex.substring(1, 3), 16);
+            const g = parseInt(hex.substring(3, 5), 16);
+            const b = parseInt(hex.substring(5, 7), 16);
+            await writeBLE([r, g, b]);
+        });
+    </script>
+</body>
+</html>
