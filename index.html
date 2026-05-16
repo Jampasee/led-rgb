@@ -137,10 +137,15 @@
         }
 
         async function pickColor(el, r, g, b) {
+            // อัปเดต UI วงกลมสี
             document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
-            const steadyBtn = document.querySelectorAll('.btn-mode')[0];
-            setMode(0, steadyBtn);
+            
+            // อัปเดต UI ปุ่มโหมดให้มาที่ "ติดค้าง"
+            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.btn-mode')[0].classList.add('active');
+
+            // ส่งแค่ค่าสี (บอร์ดจะเปลี่ยนโหมดเป็น Steady ให้เองอัตโนมัติ)
             await writeBLE([r, g, b]);
         }
 
