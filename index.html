@@ -97,17 +97,22 @@
 
     <script>
         let characteristic;
+        let bluetoothDevice;
         let isWriting = false; // ป้องกัน GATT operation in progress
         const serviceUuid = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
         const charUuid = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 
         document.getElementById('connect').addEventListener('click', async () => {
             try {
-                const device = await navigator.bluetooth.requestDevice({
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
                     filters: [{ name: 'S3-BT-Ultimate' }],
                     optionalServices: [serviceUuid]
                 });
-                const server = await device.gatt.connect();
+                
+                // ดักจับเหตุการณ์เมื่อบลูทูธหลุดการเชื่อมต่อ
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+                const server = await bluetoothDevice.gatt.connect();
                 const service = await server.getPrimaryService(serviceUuid);
                 characteristic = await service.getCharacteristic(charUuid);
                 document.getElementById('status').innerText = "เชื่อมต่อแล้ว ✅";
@@ -116,6 +121,14 @@
                 document.getElementById('connect').style.display = "none";
             } catch (e) { document.getElementById('status').innerText = "เกิดข้อผิดพลาด: " + e.message; }
         });
+
+        function onDisconnected() {
+            document.getElementById('status').innerText = "ขาดการเชื่อมต่อ ❌";
+            document.getElementById('status').className = "text-danger fw-bold";
+            document.getElementById('controls').style.display = "none";
+            document.getElementById('connect').style.display = "block";
+            characteristic = null;
+        }
 
         async function writeBLE(data) {
             if (!characteristic || isWriting) return;
