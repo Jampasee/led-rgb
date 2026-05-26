@@ -1,106 +1,915 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S3 BT-Ultimate Pro</title>
-    <!-- App Icons -->
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#05070d">
     <link rel="manifest" href="manifest.json">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', 'Tahoma', sans-serif; min-height: 100vh; padding-bottom: 50px; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .btn-custom { border-radius: 12px; padding: 12px; font-weight: 600; transition: all 0.2s; border: none; }
-        .btn-custom:active { transform: scale(0.95); }
-        
-        .btn-mode { 
-            background: linear-gradient(135deg, #334155 0%, #1e293b 100%); 
-            color: #94a3b8; width: 100%; margin-bottom: 10px; 
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .btn-mode.active { 
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-            color: white !important; box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); 
-            border: 1px solid rgba(255,255,255,0.3); transform: translateY(-2px);
-        }
-        .btn-rainbow-active {
-            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff) !important;
-            color: white !important; box-shadow: 0 0 25px rgba(255, 255, 255, 0.4) !important;
-            animation: rainbow-glow 2s infinite linear;
-        }
-        @keyframes rainbow-glow {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
+        :root {
+            --bg: #05070d;
+            --panel: rgba(8, 18, 30, 0.74);
+            --panel-strong: rgba(12, 28, 45, 0.92);
+            --line: rgba(116, 232, 255, 0.22);
+            --cyan: #51e7ff;
+            --blue: #2f7cff;
+            --green: #56ffad;
+            --pink: #ff4fd8;
+            --amber: #ffc857;
+            --text: #eff8ff;
+            --muted: #82a7ba;
         }
 
-        .color-circle { width: 45px; height: 45px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; display: inline-block; margin: 4px; }
-        .color-circle.active { border: 3px solid #3b82f6; transform: scale(1.1); box-shadow: 0 0 15px #3b82f6; }
-        
-        .section-label { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 20px; border-left: 4px solid #3b82f6; padding-left: 10px; }
-        #status { font-size: 0.85rem; padding: 5px 15px; border-radius: 20px; background: rgba(0,0,0,0.3); display: inline-block; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text);
+            font-family: "Inter", "Tahoma", sans-serif;
+            background:
+                radial-gradient(circle at 50% -8%, rgba(81, 231, 255, 0.28), transparent 34%),
+                radial-gradient(circle at 8% 20%, rgba(255, 79, 216, 0.16), transparent 28%),
+                radial-gradient(circle at 92% 76%, rgba(86, 255, 173, 0.13), transparent 30%),
+                linear-gradient(145deg, #030509 0%, #07101d 46%, #03060a 100%);
+            overflow-x: hidden;
+            padding: 22px 0 42px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(81, 231, 255, 0.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(81, 231, 255, 0.045) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent 78%);
+        }
+
+        .cockpit {
+            position: relative;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .dashboard-shell {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(111, 224, 255, 0.28);
+            border-radius: 28px;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 32%),
+                linear-gradient(180deg, rgba(15, 33, 52, 0.92), rgba(4, 10, 17, 0.94));
+            box-shadow:
+                0 28px 80px rgba(0, 0, 0, 0.62),
+                inset 0 1px 0 rgba(255, 255, 255, 0.16),
+                0 0 50px rgba(47, 124, 255, 0.16);
+            padding: clamp(18px, 3vw, 34px);
+        }
+
+        .dashboard-shell::after {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            pointer-events: none;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.055);
+        }
+
+        .topbar {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: clamp(1.8rem, 4vw, 3.6rem);
+            font-weight: 800;
+            letter-spacing: 0;
+            line-height: 1;
+            text-shadow: 0 0 30px rgba(81, 231, 255, 0.35);
+        }
+
+        .brand-title span {
+            color: var(--cyan);
+        }
+
+        .subline {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        #status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 40px;
+            padding: 8px 16px;
+            border: 1px solid rgba(81, 231, 255, 0.28);
+            border-radius: 999px;
+            background: rgba(2, 8, 14, 0.72);
+            color: var(--cyan);
+            font-size: 0.9rem;
+            font-weight: 700;
+            box-shadow: inset 0 0 18px rgba(81, 231, 255, 0.08);
+            white-space: nowrap;
+        }
+
+        #status::before {
+            content: "";
+            width: 9px;
+            height: 9px;
+            margin-right: 9px;
+            border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 14px var(--amber);
+        }
+
+        #status.text-success::before {
+            background: var(--green);
+            box-shadow: 0 0 14px var(--green);
+        }
+
+        #status.text-danger::before {
+            background: #ff5c75;
+            box-shadow: 0 0 14px #ff5c75;
+        }
+
+        .hero-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .drive-display,
+        .glass-card {
+            border: 1px solid var(--line);
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.075), transparent 34%),
+                var(--panel);
+            backdrop-filter: blur(18px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 46px rgba(0, 0, 0, 0.3);
+        }
+
+        .drive-display {
+            min-height: 350px;
+            border-radius: 24px;
+            padding: clamp(18px, 3vw, 30px);
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .drive-display::before {
+            content: "";
+            position: absolute;
+            width: min(84%, 500px);
+            height: min(76%, 300px);
+            border-radius: 34px;
+            border: 1px solid rgba(81, 231, 255, 0.16);
+            background:
+                linear-gradient(90deg, transparent 49.7%, rgba(81, 231, 255, 0.18) 50%, transparent 50.3%),
+                linear-gradient(0deg, transparent 49.7%, rgba(81, 231, 255, 0.12) 50%, transparent 50.3%);
+            box-shadow: 0 0 70px rgba(81, 231, 255, 0.16), inset 0 0 52px rgba(47, 124, 255, 0.12);
+        }
+
+        .drive-display::after {
+            content: "";
+            position: absolute;
+            inset: auto 12% 28px;
+            height: 78px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(81, 231, 255, 0.18), transparent 64%);
+        }
+
+        .vehicle-display {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 420px);
+            aspect-ratio: 1.48;
+            display: grid;
+            place-items: center;
+        }
+
+        .vehicle-display::before,
+        .vehicle-display::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 76%;
+            height: 22%;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(81, 231, 255, 0.22), transparent 68%);
+            filter: blur(2px);
+        }
+
+        .vehicle-display::before {
+            top: 5%;
+        }
+
+        .vehicle-display::after {
+            bottom: 2%;
+        }
+
+        .parking-lane {
+            position: absolute;
+            inset: 7% 3%;
+            border-radius: 30px;
+            border: 1px solid rgba(81, 231, 255, 0.2);
+            background:
+                linear-gradient(90deg, rgba(81, 231, 255, 0.16) 0 2px, transparent 2px 25%, rgba(81, 231, 255, 0.08) 25% 25.4%, transparent 25.4% 74.6%, rgba(81, 231, 255, 0.08) 74.6% 75%, transparent 75% calc(100% - 2px), rgba(81, 231, 255, 0.16) calc(100% - 2px)),
+                repeating-linear-gradient(0deg, transparent 0 22px, rgba(81, 231, 255, 0.055) 23px 24px);
+            box-shadow: inset 0 0 44px rgba(81, 231, 255, 0.07);
+        }
+
+        .scan-line {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            border-radius: 28px;
+            pointer-events: none;
+        }
+
+        .scan-line::before {
+            content: "";
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            height: 2px;
+            top: 12%;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            box-shadow: 0 0 18px var(--cyan);
+            animation: vehicle-scan 3.8s ease-in-out infinite;
+        }
+
+        @keyframes vehicle-scan {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.25;
+            }
+
+            50% {
+                transform: translateY(210px);
+                opacity: 0.95;
+            }
+        }
+
+        .topview-car {
+            position: relative;
+            z-index: 2;
+            width: 57%;
+            max-width: 255px;
+            filter: drop-shadow(0 28px 34px rgba(0, 0, 0, 0.58)) drop-shadow(0 0 28px rgba(81, 231, 255, 0.2));
+        }
+
+        .topview-car img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .front-aura,
+        .left-aura,
+        .right-aura,
+        .rear-aura {
+            --aura-color: #ff0000;
+            position: absolute;
+            z-index: 3;
+            pointer-events: none;
+            filter: blur(14px) saturate(1.6);
+            opacity: 0.66;
+            mix-blend-mode: screen;
+            transition: opacity 0.24s ease, filter 0.24s ease;
+            border-radius: 999px;
+        }
+
+        .rear-aura {
+            left: 50%;
+            bottom: 0;
+            width: 34%;
+            height: 13%;
+            transform: translateX(-50%);
+            background: radial-gradient(ellipse at 50% 50%, var(--aura-color) 0%, color-mix(in srgb, var(--aura-color) 50%, transparent) 36%, transparent 74%);
+        }
+
+        .front-aura {
+            left: 50%;
+            top: 0;
+            width: 34%;
+            height: 13%;
+            transform: translateX(-50%);
+            background: radial-gradient(ellipse at 50% 50%, var(--aura-color) 0%, color-mix(in srgb, var(--aura-color) 50%, transparent) 36%, transparent 74%);
+        }
+
+        .left-aura {
+            left: 5%;
+            top: 50%;
+            width: 13%;
+            height: 45%;
+            transform: translateY(-50%);
+            background: radial-gradient(ellipse at 50% 50%, var(--aura-color) 0%, color-mix(in srgb, var(--aura-color) 50%, transparent) 36%, transparent 74%);
+        }
+
+        .right-aura {
+            right: 5%;
+            top: 50%;
+            width: 13%;
+            height: 45%;
+            transform: translateY(-50%);
+            background: radial-gradient(ellipse at 50% 50%, var(--aura-color) 0%, color-mix(in srgb, var(--aura-color) 50%, transparent) 36%, transparent 74%);
+        }
+
+        .vehicle-display.preview-off .front-aura,
+        .vehicle-display.preview-off .left-aura,
+        .vehicle-display.preview-off .right-aura,
+        .vehicle-display.preview-off .rear-aura {
+            opacity: 0;
+        }
+
+        .vehicle-display.preview-blink .front-aura,
+        .vehicle-display.preview-blink .left-aura,
+        .vehicle-display.preview-blink .right-aura,
+        .vehicle-display.preview-blink .rear-aura {
+            animation: aura-blink 0.72s infinite;
+        }
+
+        .vehicle-display.preview-breathe .front-aura,
+        .vehicle-display.preview-breathe .left-aura,
+        .vehicle-display.preview-breathe .right-aura,
+        .vehicle-display.preview-breathe .rear-aura {
+            animation: aura-breathe 2.3s ease-in-out infinite;
+        }
+
+        .vehicle-display.preview-heartbeat .front-aura,
+        .vehicle-display.preview-heartbeat .left-aura,
+        .vehicle-display.preview-heartbeat .right-aura,
+        .vehicle-display.preview-heartbeat .rear-aura {
+            animation: aura-heartbeat 1.18s ease-in-out infinite;
+        }
+
+        .vehicle-display.preview-rainbow .front-aura,
+        .vehicle-display.preview-rainbow .left-aura,
+        .vehicle-display.preview-rainbow .right-aura,
+        .vehicle-display.preview-rainbow .rear-aura {
+            animation: aura-rainbow 2.8s linear infinite;
+        }
+
+        .vehicle-display.preview-siren .front-aura,
+        .vehicle-display.preview-siren .left-aura,
+        .vehicle-display.preview-siren .right-aura,
+        .vehicle-display.preview-siren .rear-aura {
+            --aura-color: #ff355f;
+            animation: aura-siren 0.56s infinite;
+        }
+
+        @keyframes aura-blink {
+
+            0%,
+            100% {
+                opacity: 0.58;
+            }
+
+            50% {
+                opacity: 0.12;
+            }
+        }
+
+        @keyframes aura-breathe {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                filter: blur(12px) saturate(1.2);
+            }
+
+            50% {
+                opacity: 0.72;
+                filter: blur(18px) saturate(1.6);
+            }
+        }
+
+        @keyframes aura-heartbeat {
+
+            0%,
+            100% {
+                opacity: 0.18;
+            }
+
+            18%,
+            30% {
+                opacity: 0.75;
+            }
+
+            24% {
+                opacity: 0.32;
+            }
+
+            46% {
+                opacity: 0.62;
+            }
+        }
+
+        @keyframes aura-rainbow {
+            to {
+                filter: blur(16px) saturate(1.5) hue-rotate(360deg);
+            }
+        }
+
+        @keyframes aura-siren {
+
+            0%,
+            100% {
+                --aura-color: #2f7cff;
+                opacity: 0.62;
+            }
+
+            50% {
+                --aura-color: #ff355f;
+                opacity: 0.62;
+            }
+        }
+
+        .connect-panel {
+            border-radius: 24px;
+            padding: 22px;
+            background:
+                linear-gradient(180deg, rgba(14, 37, 59, 0.9), rgba(5, 12, 22, 0.9));
+            border: 1px solid rgba(81, 231, 255, 0.22);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .metric-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .metric {
+            min-height: 82px;
+            border-radius: 16px;
+            padding: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.045);
+        }
+
+        .metric span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.72rem;
+        }
+
+        .metric strong {
+            display: block;
+            margin-top: 6px;
+            color: var(--text);
+            font-size: 1.1rem;
+        }
+
+        .btn-custom {
+            min-height: 52px;
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-weight: 800;
+            letter-spacing: 0;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+
+        .btn-custom:active {
+            transform: scale(0.97);
+        }
+
+        #connect {
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: linear-gradient(135deg, #42e8ff 0%, #2f7cff 48%, #8a5cff 100%);
+            color: #ffffff;
+            box-shadow: 0 18px 42px rgba(47, 124, 255, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        }
+
+        #connect:hover {
+            box-shadow: 0 24px 58px rgba(81, 231, 255, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.36);
+            transform: translateY(-2px);
+        }
+
+        #controls {
+            position: relative;
+            z-index: 1;
+            margin-top: 20px;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: minmax(260px, 0.85fr) minmax(300px, 1fr);
+            gap: 18px;
+        }
+
+        .glass-card {
+            border-radius: 22px;
+            padding: 22px;
+        }
+
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            color: #d9f8ff;
+            font-size: 0.84rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .section-label::before {
+            content: "";
+            width: 28px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--cyan), transparent);
+            box-shadow: 0 0 12px var(--cyan);
+        }
+
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(48px, 1fr));
+            gap: 11px;
+        }
+
+        .color-circle {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.18), 0 12px 28px rgba(0, 0, 0, 0.22);
+        }
+
+        .color-circle.active {
+            border-color: #ffffff;
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 0 24px rgba(81, 231, 255, 0.7);
+        }
+
+        #colorPicker {
+            width: 100%;
+            height: 56px;
+            margin-top: 16px;
+            border: 1px solid rgba(81, 231, 255, 0.22);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 7px;
+        }
+
+        .tuning-card {
+            margin-top: 18px;
+        }
+
+        .form-label {
+            color: #dcefff;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .value-pill {
+            min-width: 48px;
+            text-align: center;
+            padding: 2px 10px;
+            border-radius: 999px;
+            color: var(--cyan);
+            background: rgba(81, 231, 255, 0.09);
+            border: 1px solid rgba(81, 231, 255, 0.22);
+        }
+
+        .form-range {
+            accent-color: var(--cyan);
+        }
+
+        .reset-btn {
+            width: 100%;
+            margin-top: 8px;
+            color: #dcefff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.055);
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .btn-mode {
+            width: 100%;
+            min-height: 66px;
+            color: #b8d4e5;
+            border: 1px solid rgba(81, 231, 255, 0.14);
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.07), transparent 45%),
+                rgba(7, 18, 31, 0.88);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-mode:hover {
+            color: #ffffff;
+            border-color: rgba(81, 231, 255, 0.36);
+            box-shadow: 0 12px 32px rgba(81, 231, 255, 0.1);
+        }
+
+        .btn-mode.active {
+            color: #06111d !important;
+            border-color: rgba(255, 255, 255, 0.55);
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            box-shadow: 0 0 30px rgba(81, 231, 255, 0.36);
+            transform: translateY(-2px);
+        }
+
+        .btn-rainbow-active {
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.55) !important;
+            background: linear-gradient(90deg, #ff3d77, #ffc857, #56ffad, #51e7ff, #8a5cff) !important;
+            box-shadow: 0 0 34px rgba(255, 255, 255, 0.22) !important;
+            animation: rainbow-glow 2.4s infinite linear;
+        }
+
+        @keyframes rainbow-glow {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        .danger-mode {
+            grid-column: 1 / -1;
+            border: 1px solid rgba(255, 92, 117, 0.42);
+            background: linear-gradient(135deg, rgba(255, 92, 117, 0.95), rgba(139, 20, 42, 0.95));
+            color: white;
+            box-shadow: 0 16px 36px rgba(255, 92, 117, 0.18);
+        }
+
+        .wide-mode {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 820px) {
+            body {
+                padding-top: 12px;
+            }
+
+            .dashboard-shell {
+                border-radius: 22px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            #status {
+                white-space: normal;
+            }
+
+            .hero-grid,
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .drive-display {
+                min-height: 300px;
+            }
+
+            .vehicle-display {
+                width: min(100%, 380px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metric-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .mode-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .palette {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .glass-card,
+            .connect-panel {
+                padding: 18px;
+            }
+
+            .vehicle-display {
+                aspect-ratio: 1.05;
+            }
+
+            .topview-car {
+                width: 63%;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container mt-4">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold mb-1">S3 <span class="text-primary">BT-Ultimate</span></h2>
-            <div id="status" class="text-info">ยังไม่ได้เชื่อมต่อบลูทูธ</div>
-        </div>
-
-        <button id="connect" class="btn btn-primary w-100 btn-custom py-3 mb-4 shadow">🔵 เริ่มการเชื่อมต่อบลูทูธ</button>
-
-        <div id="controls" style="display:none;">
-            <div class="glass-card mb-3">
-                <div class="section-label">พาเลทแม่สี</div>
-                <div class="text-center">
-                    <div class="color-circle" style="background:#FF0000" onclick="pickColor(this, 255,0,0)"></div>
-                    <div class="color-circle" style="background:#00FF00" onclick="pickColor(this, 0,255,0)"></div>
-                    <div class="color-circle" style="background:#0000FF" onclick="pickColor(this, 0,0,255)"></div>
-                    <div class="color-circle" style="background:#FFFF00" onclick="pickColor(this, 255,255,0)"></div>
-                    <div class="color-circle" style="background:#00FFFF" onclick="pickColor(this, 0,255,255)"></div>
-                    <div class="color-circle" style="background:#FF00FF" onclick="pickColor(this, 255,0,255)"></div>
-                    <div class="color-circle" style="background:#FFFFFF" onclick="pickColor(this, 255,255,255)"></div>
-                    <div class="color-circle" style="background:#FFA500" onclick="pickColor(this, 255,165,0)"></div>
+    <main class="cockpit">
+        <section class="dashboard-shell">
+            <div class="topbar">
+                <div>
+                    <h1 class="brand-title">S3 <span>BT-Ultimate</span></h1>
+                    <div class="subline">Electric light cockpit control</div>
                 </div>
-                <input type="color" id="colorPicker" class="form-control form-control-color w-100 mt-3 border-0 bg-transparent" style="height:50px;" value="#ff0000">
+                <div id="status" class="text-info">ยังไม่ได้เชื่อมต่อบลูทูธ</div>
             </div>
 
-            <div class="glass-card mb-3">
-                <div class="section-label">การปรับแต่ง</div>
-                <div class="mb-4"><label class="form-label d-flex justify-content-between"><span>ความสว่าง</span> <span id="brightVal">100</span></label>
-                    <input type="range" class="form-range" id="brightRange" min="0" max="255" value="100" oninput="updateVal(0xFE, this.value, 'brightVal')"></div>
-                <div class="mb-3"><label class="form-label d-flex justify-content-between"><span>ความเร็ว</span> <span id="speedVal">100</span></label>
-                    <input type="range" class="form-range" id="speedRange" min="1" max="255" value="100" oninput="updateVal(0xFD, this.value, 'speedVal')"></div>
-                <button class="btn btn-outline-secondary w-100 btn-custom mt-2" onclick="resetDefault()">🔄 คืนค่าเริ่มต้น</button>
+            <div class="hero-grid">
+                <div class="drive-display">
+                    <div class="vehicle-display preview-off" aria-label="ภาพรถมุมมองบน All New Isuzu 1.9">
+                        <div class="parking-lane"></div>
+                        <div class="scan-line"></div>
+                        <div class="topview-car">
+                            <img src="car-cutout.png" alt="All New Isuzu 1.9 มุมมองด้านบน">
+                        </div>
+                        <div class="front-aura" aria-hidden="true"></div>
+                        <div class="left-aura" aria-hidden="true"></div>
+                        <div class="right-aura" aria-hidden="true"></div>
+                        <div class="rear-aura" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <aside class="connect-panel">
+                    <div class="metric-strip">
+                        <div class="metric">
+                            <span>MODE</span>
+                            <strong>STEADY</strong>
+                        </div>
+                        <div class="metric">
+                            <span>BRIGHT</span>
+                            <strong id="dashBright">50</strong>
+                        </div>
+                        <div class="metric">
+                            <span>SPEED</span>
+                            <strong id="dashSpeed">100</strong>
+                        </div>
+                    </div>
+                    <button id="connect" class="btn btn-custom">เชื่อมต่อบลูทูธ</button>
+                </aside>
             </div>
 
-            <div class="glass-card">
-                <div class="section-label">โหมดการทำงาน</div>
-                <div class="row g-2">
-                    <div class="col-6"><button class="btn btn-custom btn-mode active" onclick="setMode(0, this)">ติดค้าง</button></div>
-                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(2, this)">กระพริบช้า</button></div>
-                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(3, this)">กระพริบเร็ว</button></div>
-                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(4, this)">หายใจ</button></div>
-                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(5, this)">จังหวะหัวใจ</button></div>
-                    <div class="col-6"><button class="btn btn-custom btn-mode" onclick="setMode(6, this)">ไซเรนตำรวจ</button></div>
-                    <div class="col-12"><button class="btn btn-custom btn-mode" style="background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);" onclick="setMode(1, this, true)">🌈 สีรุ้งอัตโนมัติ</button></div>
-                    <div class="col-12"><button class="btn btn-custom btn-danger mt-2" onclick="setMode(7, this)">❌ ปิดระบบไฟ</button></div>
+            <div id="controls" style="display:none;">
+                <div class="control-grid">
+                    <div>
+                        <div class="glass-card">
+                            <div class="section-label">Color Matrix</div>
+                            <div class="palette">
+                                <button class="color-circle" aria-label="แดง" style="background:#FF0000"
+                                    onclick="pickColor(this, 255,0,0)"></button>
+                                <button class="color-circle" aria-label="เขียว" style="background:#00FF00"
+                                    onclick="pickColor(this, 0,255,0)"></button>
+                                <button class="color-circle" aria-label="น้ำเงิน" style="background:#0000FF"
+                                    onclick="pickColor(this, 0,0,255)"></button>
+                                <button class="color-circle" aria-label="เหลือง" style="background:#FFFF00"
+                                    onclick="pickColor(this, 255,255,0)"></button>
+                                <button class="color-circle" aria-label="ฟ้า" style="background:#00FFFF"
+                                    onclick="pickColor(this, 0,255,255)"></button>
+                                <button class="color-circle" aria-label="ชมพู" style="background:#FF00FF"
+                                    onclick="pickColor(this, 255,0,255)"></button>
+                                <button class="color-circle" aria-label="ขาว" style="background:#FFFFFF"
+                                    onclick="pickColor(this, 255,255,255)"></button>
+                                <button class="color-circle" aria-label="ส้ม" style="background:#FFA500"
+                                    onclick="pickColor(this, 255,165,0)"></button>
+                            </div>
+                            <input type="color" id="colorPicker" value="#ff0000" aria-label="เลือกสีเอง">
+                        </div>
+
+                        <div class="glass-card tuning-card">
+                            <div class="section-label">Drive Tuning</div>
+                            <div class="mb-4">
+                                <label class="form-label d-flex justify-content-between">
+                                    <span>ความสว่าง</span>
+                                    <span id="brightVal" class="value-pill">50</span>
+                                </label>
+                                <input type="range" class="form-range" id="brightRange" min="0" max="255" value="50"
+                                    oninput="updateVal('bright', this.value, 'brightVal')">
+                                <div class="d-flex gap-2 mt-2">
+                                    <button class="btn btn-sm btn-custom flex-grow-1 preset-bright-btn"
+                                        onclick="setBrightPreset(50, this)"
+                                        style="min-height: 38px; border-radius: 12px; font-size: 0.8rem; border: 1px solid var(--cyan); background: rgba(81, 231, 255, 0.15); color: var(--cyan); box-shadow: 0 0 10px rgba(81, 231, 255, 0.2);">ทั่วไป
+                                        (50)</button>
+                                    <button class="btn btn-sm btn-custom flex-grow-1 preset-bright-btn"
+                                        onclick="setBrightPreset(100, this)"
+                                        style="min-height: 38px; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.055); color: #dcefff;">ฝนตก
+                                        (100)</button>
+                                    <button class="btn btn-sm btn-custom flex-grow-1 preset-bright-btn"
+                                        onclick="setBrightPreset(200, this)"
+                                        style="min-height: 38px; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.055); color: #dcefff;">จอดโชว์
+                                        (200)</button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label d-flex justify-content-between">
+                                    <span>ความเร็ว</span>
+                                    <span id="speedVal" class="value-pill">100</span>
+                                </label>
+                                <input type="range" class="form-range" id="speedRange" min="1" max="255" value="100"
+                                    oninput="updateVal('speed', this.value, 'speedVal')">
+                            </div>
+                            <button class="btn btn-custom reset-btn" onclick="resetDefault()">คืนค่าเริ่มต้น</button>
+                        </div>
+                        
+                        <div class="glass-card mt-3">
+                            <div class="section-label">Zone Control</div>
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <button class="btn btn-custom w-100 zone-tab active" onclick="selectZone(4, this)" id="zone-tab-4" style="min-height: 44px; border-radius: 12px; font-size: 0.85rem; border: 1px solid var(--cyan); background: rgba(81, 231, 255, 0.15); color: var(--cyan); box-shadow: 0 0 10px rgba(81, 231, 255, 0.2);">ปรับพร้อมกันทุกจุด (All Zones)</button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-custom w-100 zone-tab" onclick="selectZone(0, this)" id="zone-tab-0" style="min-height: 44px; border-radius: 12px; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.055); color: #dcefff;">ไฟท้ายรถ (Rear)</button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-custom w-100 zone-tab" onclick="selectZone(1, this)" id="zone-tab-1" style="min-height: 44px; border-radius: 12px; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.055); color: #dcefff;">ข้างซ้าย (Left)</button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-custom w-100 zone-tab" onclick="selectZone(2, this)" id="zone-tab-2" style="min-height: 44px; border-radius: 12px; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.055); color: #dcefff;">ข้างขวา (Right)</button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-custom w-100 zone-tab" onclick="selectZone(3, this)" id="zone-tab-3" style="min-height: 44px; border-radius: 12px; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.055); color: #dcefff;">ไฟหน้ารถ (Front)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="section-label">Light Modes</div>
+                        <div class="mode-grid">
+                            <button class="btn btn-custom btn-mode active" onclick="setMode(0, this)">ติดค้าง</button>
+                            <button class="btn btn-custom btn-mode" onclick="setMode(2, this)">กระพริบช้า</button>
+                            <button class="btn btn-custom btn-mode" onclick="setMode(3, this)">กระพริบเร็ว</button>
+                            <button class="btn btn-custom btn-mode" onclick="setMode(4, this)">หายใจ</button>
+                            <button class="btn btn-custom btn-mode" onclick="setMode(5, this)">จังหวะหัวใจ</button>
+                            <button class="btn btn-custom btn-mode" onclick="setMode(6, this)">ไซเรนตำรวจ</button>
+                            <button class="btn btn-custom btn-mode wide-mode"
+                                onclick="setMode(1, this, true)">สีรุ้งอัตโนมัติ</button>
+                            <button class="btn btn-custom danger-mode" onclick="setMode(7, this)">ปิดระบบไฟ</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
         let characteristic;
         let bluetoothDevice;
-        let isWriting = false; // ป้องกัน GATT operation in progress
+        let isWriting = false;
+        let pendingWrite = null;
+        let previewColor = '#ff0000';
+        let currentZone = 4;
+        let zoneStates = [
+            { mode: 0, r: 255, g: 0, b: 0, bright: 50, speed: 100 },
+            { mode: 0, r: 255, g: 0, b: 0, bright: 50, speed: 100 },
+            { mode: 0, r: 255, g: 0, b: 0, bright: 50, speed: 100 },
+            { mode: 0, r: 255, g: 0, b: 0, bright: 50, speed: 100 },
+            { mode: 0, r: 255, g: 0, b: 0, bright: 50, speed: 100 }
+        ];
         const serviceUuid = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
         const charUuid = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+        const vehicleDisplay = document.querySelector('.vehicle-display');
+        const previewModeClasses = ['preview-off', 'preview-blink', 'preview-breathe', 'preview-heartbeat', 'preview-rainbow', 'preview-siren'];
 
         document.getElementById('connect').addEventListener('click', async () => {
             try {
@@ -108,75 +917,216 @@
                     filters: [{ name: 'S3-BT-Ultimate' }],
                     optionalServices: [serviceUuid]
                 });
-                
-                // ดักจับเหตุการณ์เมื่อบลูทูธหลุดการเชื่อมต่อ
+
                 bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
 
                 const server = await bluetoothDevice.gatt.connect();
                 const service = await server.getPrimaryService(serviceUuid);
                 characteristic = await service.getCharacteristic(charUuid);
-                document.getElementById('status').innerText = "เชื่อมต่อแล้ว ✅";
-                document.getElementById('status').className = "text-success fw-bold";
+                document.getElementById('status').innerText = "เชื่อมต่อแล้ว";
+                document.getElementById('status').className = "text-success";
                 document.getElementById('controls').style.display = "block";
                 document.getElementById('connect').style.display = "none";
-            } catch (e) { document.getElementById('status').innerText = "เกิดข้อผิดพลาด: " + e.message; }
+                setPreviewMode(0);
+            } catch (e) {
+                document.getElementById('status').innerText = "เกิดข้อผิดพลาด: " + e.message;
+                document.getElementById('status').className = "text-danger";
+            }
         });
 
         function onDisconnected() {
-            document.getElementById('status').innerText = "ขาดการเชื่อมต่อ ❌";
-            document.getElementById('status').className = "text-danger fw-bold";
+            document.getElementById('status').innerText = "ขาดการเชื่อมต่อ";
+            document.getElementById('status').className = "text-danger";
             document.getElementById('controls').style.display = "none";
             document.getElementById('connect').style.display = "block";
             characteristic = null;
+            setPreviewMode(7);
         }
 
         async function writeBLE(data) {
-            if (!characteristic || isWriting) return;
+            if (!characteristic) return;
+            if (isWriting) {
+                pendingWrite = data;
+                return;
+            }
             isWriting = true;
             try {
                 await characteristic.writeValue(new Uint8Array(data));
-            } catch (e) { console.error(e); }
-            finally { isWriting = false; }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                isWriting = false;
+                if (pendingWrite) {
+                    const nextData = pendingWrite;
+                    pendingWrite = null;
+                    writeBLE(nextData);
+                }
+            }
+        }
+
+        function selectZone(index, btn) {
+            currentZone = index;
+            document.querySelectorAll('.zone-tab').forEach(b => {
+                b.classList.remove('active');
+                b.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+                b.style.background = 'rgba(255, 255, 255, 0.055)';
+                b.style.color = '#dcefff';
+                b.style.boxShadow = 'none';
+            });
+            btn.classList.add('active');
+            btn.style.borderColor = 'var(--cyan)';
+            btn.style.background = 'rgba(81, 231, 255, 0.15)';
+            btn.style.color = 'var(--cyan)';
+            btn.style.boxShadow = '0 0 10px rgba(81, 231, 255, 0.2)';
+            
+            let s = zoneStates[index];
+            document.getElementById('brightRange').value = s.bright;
+            document.getElementById('brightVal').innerText = s.bright;
+            document.getElementById('dashBright').innerText = s.bright;
+            updatePresetButtonsHighlight(s.bright);
+            
+            document.getElementById('speedRange').value = s.speed;
+            document.getElementById('speedVal').innerText = s.speed;
+            document.getElementById('dashSpeed').innerText = s.speed;
+            
+            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active', 'btn-rainbow-active'));
+            const modeBtns = document.querySelectorAll('.btn-mode');
+            let btnIdx = -1;
+            if (s.mode === 0) btnIdx = 0; else if (s.mode === 2) btnIdx = 1; else if (s.mode === 3) btnIdx = 2; else if (s.mode === 4) btnIdx = 3; else if (s.mode === 5) btnIdx = 4; else if (s.mode === 6) btnIdx = 5; else if (s.mode === 1) btnIdx = 6; else if (s.mode === 7) btnIdx = 7;
+            if (btnIdx !== -1) {
+                if (s.mode === 1) modeBtns[btnIdx].classList.add('btn-rainbow-active');
+                else modeBtns[btnIdx].classList.add('active');
+            }
+            
+            setPreviewMode(s.mode);
+            setLightPreview(s.r, s.g, s.b);
         }
 
         async function setMode(m, btn, isRainbow = false) {
+            zoneStates[currentZone].mode = m;
+            if (currentZone === 4) for(let i=0; i<4; i++) zoneStates[i].mode = m;
             document.querySelectorAll('.btn-mode').forEach(b => {
                 b.classList.remove('active');
                 b.classList.remove('btn-rainbow-active');
             });
             if (isRainbow) btn.classList.add('btn-rainbow-active');
             else btn.classList.add('active');
-            await writeBLE([m]);
+            setPreviewMode(m);
+            await writeBLE([currentZone, 1, m]);
         }
 
         async function pickColor(el, r, g, b) {
-            // อัปเดต UI วงกลมสี
             document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
-            
-            // อัปเดต UI ปุ่มโหมดให้มาที่ "ติดค้าง"
-            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.btn-mode')[0].classList.add('active');
 
-            // ส่งแค่ค่าสี (บอร์ดจะเปลี่ยนโหมดเป็น Steady ให้เองอัตโนมัติ)
-            await writeBLE([r, g, b]);
+            zoneStates[currentZone].r = r;
+            zoneStates[currentZone].g = g;
+            zoneStates[currentZone].b = b;
+            if (currentZone === 4) for(let i=0; i<4; i++) { zoneStates[i].r = r; zoneStates[i].g = g; zoneStates[i].b = b; }
+
+            setLightPreview(r, g, b);
+
+            const sMode = zoneStates[currentZone].mode;
+            const needsSteady = sMode === 1 || sMode === 6 || sMode === 7;
+            if (needsSteady) {
+                const steadyBtn = document.querySelectorAll('.btn-mode')[0];
+                await setMode(0, steadyBtn);
+            }
+            await writeBLE([currentZone, 2, r, g, b]);
+        }
+
+        function setLightPreview(r, g, b) {
+            previewColor = `rgb(${r}, ${g}, ${b})`;
+            document.querySelector('.rear-aura').style.setProperty('--aura-color', previewColor);
+        }
+
+        function setPreviewMode(mode) {
+            vehicleDisplay.classList.remove(...previewModeClasses);
+            if (mode === 1) vehicleDisplay.classList.add('preview-rainbow');
+            if (mode === 2 || mode === 3) vehicleDisplay.classList.add('preview-blink');
+            if (mode === 4) vehicleDisplay.classList.add('preview-breathe');
+            if (mode === 5) vehicleDisplay.classList.add('preview-heartbeat');
+            if (mode === 6) vehicleDisplay.classList.add('preview-siren');
+            if (mode === 7) vehicleDisplay.classList.add('preview-off');
         }
 
         async function updateVal(type, v, labelId) {
             document.getElementById(labelId).innerText = v;
-            await writeBLE([type, v]);
+            if (type === 'bright') {
+                document.getElementById('dashBright').innerText = v;
+                updatePresetButtonsHighlight(v);
+                zoneStates[currentZone].bright = parseInt(v);
+                if (currentZone === 4) for(let i=0; i<4; i++) zoneStates[i].bright = parseInt(v);
+                await writeBLE([currentZone, 3, parseInt(v)]);
+            } else if (type === 'speed') {
+                document.getElementById('dashSpeed').innerText = v;
+                zoneStates[currentZone].speed = parseInt(v);
+                if (currentZone === 4) for(let i=0; i<4; i++) zoneStates[i].speed = parseInt(v);
+                await writeBLE([currentZone, 4, parseInt(v)]);
+            }
+        }
+
+        async function setBrightPreset(val, btn) {
+            document.getElementById('brightRange').value = val;
+            document.getElementById('brightVal').innerText = val;
+            document.getElementById('dashBright').innerText = val;
+
+            zoneStates[currentZone].bright = val;
+            if (currentZone === 4) for(let i=0; i<4; i++) zoneStates[i].bright = val;
+
+            document.querySelectorAll('.preset-bright-btn').forEach(b => {
+                b.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+                b.style.background = 'rgba(255, 255, 255, 0.055)';
+                b.style.color = '#dcefff';
+                b.style.boxShadow = 'none';
+            });
+            btn.style.borderColor = 'var(--cyan)';
+            btn.style.background = 'rgba(81, 231, 255, 0.15)';
+            btn.style.color = 'var(--cyan)';
+            btn.style.boxShadow = '0 0 10px rgba(81, 231, 255, 0.2)';
+
+            await writeBLE([currentZone, 3, val]);
+        }
+
+        function updatePresetButtonsHighlight(val) {
+            document.querySelectorAll('.preset-bright-btn').forEach(b => {
+                b.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+                b.style.background = 'rgba(255, 255, 255, 0.055)';
+                b.style.color = '#dcefff';
+                b.style.boxShadow = 'none';
+            });
+            let matchingBtn = null;
+            if (val == 50) matchingBtn = document.querySelectorAll('.preset-bright-btn')[0];
+            else if (val == 100) matchingBtn = document.querySelectorAll('.preset-bright-btn')[1];
+            else if (val == 200) matchingBtn = document.querySelectorAll('.preset-bright-btn')[2];
+
+            if (matchingBtn) {
+                matchingBtn.style.borderColor = 'var(--cyan)';
+                matchingBtn.style.background = 'rgba(81, 231, 255, 0.15)';
+                matchingBtn.style.color = 'var(--cyan)';
+                matchingBtn.style.boxShadow = '0 0 10px rgba(81, 231, 255, 0.2)';
+            }
         }
 
         async function resetDefault() {
-            document.getElementById('brightRange').value = 100;
+            let targets = currentZone === 4 ? [0,1,2,3,4] : [currentZone];
+            for(let z of targets) {
+                zoneStates[z] = { mode: 0, r: 255, g: 0, b: 0, bright: 50, speed: 100 };
+            }
+            
+            document.getElementById('brightRange').value = 50;
             document.getElementById('speedRange').value = 100;
-            document.getElementById('brightVal').innerText = 100;
+            document.getElementById('brightVal').innerText = 50;
             document.getElementById('speedVal').innerText = 100;
-            await writeBLE([0xFE, 100]);
-            await writeBLE([0xFD, 100]);
+            document.getElementById('dashBright').innerText = 50;
+            document.getElementById('dashSpeed').innerText = 100;
+            updatePresetButtonsHighlight(50);
+            
             const steadyBtn = document.querySelectorAll('.btn-mode')[0];
             setMode(0, steadyBtn);
-            await writeBLE([255, 0, 0]);
+            await writeBLE([currentZone, 3, 50]);
+            await writeBLE([currentZone, 4, 100]);
+            await writeBLE([currentZone, 2, 255, 0, 0]);
         }
 
         document.getElementById('colorPicker').addEventListener('input', async (e) => {
@@ -184,8 +1134,31 @@
             const r = parseInt(hex.substring(1, 3), 16);
             const g = parseInt(hex.substring(3, 5), 16);
             const b = parseInt(hex.substring(5, 7), 16);
-            await writeBLE([r, g, b]);
+            setLightPreview(r, g, b);
+
+            zoneStates[currentZone].r = r;
+            zoneStates[currentZone].g = g;
+            zoneStates[currentZone].b = b;
+            if (currentZone === 4) for(let i=0; i<4; i++) { zoneStates[i].r = r; zoneStates[i].g = g; zoneStates[i].b = b; }
+
+            const sMode = zoneStates[currentZone].mode;
+            const needsSteady = sMode === 1 || sMode === 6 || sMode === 7;
+            if (needsSteady) {
+                zoneStates[currentZone].mode = 0;
+                if (currentZone === 4) for(let i=0; i<4; i++) zoneStates[i].mode = 0;
+                document.querySelectorAll('.btn-mode').forEach(b => {
+                    b.classList.remove('active');
+                    b.classList.remove('btn-rainbow-active');
+                });
+                const steadyBtn = document.querySelectorAll('.btn-mode')[0];
+                steadyBtn.classList.add('active');
+            }
+            setPreviewMode(zoneStates[currentZone].mode);
+            await writeBLE([currentZone, 2, r, g, b]);
         });
+
+        setLightPreview(255, 0, 0);
     </script>
 </body>
+
 </html>
