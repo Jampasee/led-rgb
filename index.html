@@ -346,47 +346,29 @@
             background: radial-gradient(ellipse at 50% 50%, var(--aura-color) 0%, color-mix(in srgb, var(--aura-color) 50%, transparent) 36%, transparent 74%);
         }
 
-        .vehicle-display.preview-off .front-aura,
-        .vehicle-display.preview-off .left-aura,
-        .vehicle-display.preview-off .right-aura,
-        .vehicle-display.preview-off .rear-aura {
-            opacity: 0;
+        .preview-off {
+            opacity: 0 !important;
         }
 
-        .vehicle-display.preview-blink .front-aura,
-        .vehicle-display.preview-blink .left-aura,
-        .vehicle-display.preview-blink .right-aura,
-        .vehicle-display.preview-blink .rear-aura {
-            animation: aura-blink 0.72s infinite;
+        .preview-blink {
+            animation: aura-blink 0.72s infinite !important;
         }
 
-        .vehicle-display.preview-breathe .front-aura,
-        .vehicle-display.preview-breathe .left-aura,
-        .vehicle-display.preview-breathe .right-aura,
-        .vehicle-display.preview-breathe .rear-aura {
-            animation: aura-breathe 2.3s ease-in-out infinite;
+        .preview-breathe {
+            animation: aura-breathe 2.3s ease-in-out infinite !important;
         }
 
-        .vehicle-display.preview-heartbeat .front-aura,
-        .vehicle-display.preview-heartbeat .left-aura,
-        .vehicle-display.preview-heartbeat .right-aura,
-        .vehicle-display.preview-heartbeat .rear-aura {
-            animation: aura-heartbeat 1.18s ease-in-out infinite;
+        .preview-heartbeat {
+            animation: aura-heartbeat 1.18s ease-in-out infinite !important;
         }
 
-        .vehicle-display.preview-rainbow .front-aura,
-        .vehicle-display.preview-rainbow .left-aura,
-        .vehicle-display.preview-rainbow .right-aura,
-        .vehicle-display.preview-rainbow .rear-aura {
-            animation: aura-rainbow 2.8s linear infinite;
+        .preview-rainbow {
+            animation: aura-rainbow 2.8s linear infinite !important;
         }
 
-        .vehicle-display.preview-siren .front-aura,
-        .vehicle-display.preview-siren .left-aura,
-        .vehicle-display.preview-siren .right-aura,
-        .vehicle-display.preview-siren .rear-aura {
-            --aura-color: #ff355f;
-            animation: aura-siren 0.56s infinite;
+        .preview-siren {
+            --aura-color: #ff355f !important;
+            animation: aura-siren 0.56s infinite !important;
         }
 
         @keyframes aura-blink {
@@ -969,7 +951,8 @@
             document.getElementById('controls').style.display = "none";
             document.getElementById('connect').style.display = "block";
             characteristic = null;
-            setPreviewMode(7);
+            for(let i=0; i<4; i++) zoneStates[i].mode = 7;
+            updateAuraPreviews();
         }
 
         async function writeBLE(data) {
@@ -1064,19 +1047,31 @@
             await writeBLE([currentZone, 2, r, g, b]);
         }
 
+        function updateAuraPreviews() {
+            const auraSelectors = ['.rear-aura', '.left-aura', '.right-aura', '.front-aura'];
+            for(let i=0; i<4; i++) {
+                let s = zoneStates[i];
+                let el = document.querySelector(auraSelectors[i]);
+                if (!el) continue;
+                
+                el.style.setProperty('--aura-color', `rgb(${s.r}, ${s.g}, ${s.b})`);
+                
+                el.classList.remove(...previewModeClasses);
+                if (s.mode === 1) el.classList.add('preview-rainbow');
+                if (s.mode === 2 || s.mode === 3) el.classList.add('preview-blink');
+                if (s.mode === 4) el.classList.add('preview-breathe');
+                if (s.mode === 5) el.classList.add('preview-heartbeat');
+                if (s.mode === 6) el.classList.add('preview-siren');
+                if (s.mode === 7) el.classList.add('preview-off');
+            }
+        }
+
         function setLightPreview(r, g, b) {
-            previewColor = `rgb(${r}, ${g}, ${b})`;
-            document.querySelector('.rear-aura').style.setProperty('--aura-color', previewColor);
+            updateAuraPreviews();
         }
 
         function setPreviewMode(mode) {
-            vehicleDisplay.classList.remove(...previewModeClasses);
-            if (mode === 1) vehicleDisplay.classList.add('preview-rainbow');
-            if (mode === 2 || mode === 3) vehicleDisplay.classList.add('preview-blink');
-            if (mode === 4) vehicleDisplay.classList.add('preview-breathe');
-            if (mode === 5) vehicleDisplay.classList.add('preview-heartbeat');
-            if (mode === 6) vehicleDisplay.classList.add('preview-siren');
-            if (mode === 7) vehicleDisplay.classList.add('preview-off');
+            updateAuraPreviews();
         }
 
         async function updateVal(type, v, labelId) {
