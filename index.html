@@ -371,6 +371,7 @@
             animation: aura-siren 0.56s infinite !important;
         }
 
+
         @keyframes aura-blink {
 
             0%,
@@ -382,6 +383,7 @@
                 opacity: 0.12;
             }
         }
+
 
         @keyframes aura-breathe {
 
@@ -769,7 +771,7 @@
 
             <div class="hero-grid">
                 <div class="drive-display">
-                    <div class="vehicle-display preview-off" aria-label="ภาพรถมุมมองบน All New Isuzu 1.9">
+                    <div class="vehicle-display" aria-label="ภาพรถมุมมองบน All New Isuzu 1.9">
                         <div class="parking-lane"></div>
                         <div class="scan-line"></div>
                         <div class="topview-car">
@@ -1049,20 +1051,24 @@
 
         function updateAuraPreviews() {
             const auraSelectors = ['.rear-aura', '.left-aura', '.right-aura', '.front-aura'];
+            const allModeClasses = ['preview-off', 'preview-blink', 'preview-breathe', 'preview-heartbeat', 'preview-rainbow', 'preview-siren'];
             for(let i=0; i<4; i++) {
                 let s = zoneStates[i];
                 let el = document.querySelector(auraSelectors[i]);
                 if (!el) continue;
                 
                 el.style.setProperty('--aura-color', `rgb(${s.r}, ${s.g}, ${s.b})`);
+                el.style.animation = '';
+                el.style.opacity = '';
+                el.classList.remove(...allModeClasses);
                 
-                el.classList.remove(...previewModeClasses);
                 if (s.mode === 1) el.classList.add('preview-rainbow');
-                if (s.mode === 2 || s.mode === 3) el.classList.add('preview-blink');
-                if (s.mode === 4) el.classList.add('preview-breathe');
-                if (s.mode === 5) el.classList.add('preview-heartbeat');
-                if (s.mode === 6) el.classList.add('preview-siren');
-                if (s.mode === 7) el.classList.add('preview-off');
+                else if (s.mode === 2 || s.mode === 3) el.classList.add('preview-blink');
+                else if (s.mode === 4) el.classList.add('preview-breathe');
+                else if (s.mode === 5) el.classList.add('preview-heartbeat');
+                else if (s.mode === 6) el.classList.add('preview-siren');
+                else if (s.mode === 7) el.classList.add('preview-off');
+                // mode 0 = steady, no extra class, just show color
             }
         }
 
