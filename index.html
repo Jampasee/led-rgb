@@ -718,28 +718,57 @@
 
         @media (max-width: 480px) {
             .metric-strip {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            .metric {
+                padding: 8px;
+                min-height: 60px;
+            }
+            
+            .metric span {
+                font-size: 0.65rem;
+            }
+            
+            .metric strong {
+                font-size: 0.95rem;
+                margin-top: 2px;
             }
 
             .mode-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
 
             .palette {
                 grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
             }
 
             .glass-card,
             .connect-panel {
-                padding: 18px;
+                padding: 14px;
             }
 
             .vehicle-display {
-                aspect-ratio: 1.05;
+                aspect-ratio: 1.15;
             }
 
             .topview-car {
-                width: 63%;
+                width: 65%;
+            }
+            
+            .btn-mode {
+                min-height: 52px;
+                font-size: 0.85rem;
+                padding: 6px;
+            }
+            
+            .zone-tab {
+                min-height: 40px !important;
+                font-size: 0.75rem !important;
+                padding: 6px !important;
             }
         }
     </style>
